@@ -1,0 +1,218 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Hangman
+  description: Test game
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /games:
+    # our controller name
+    x-swagger-router-controller: game
+    get:
+      summary: List of available games
+      description: |
+        The GetGameList endpoint returns sorted list of available hangman games as an array of objects with the game title and id propperties.
+      operationId: getGameList
+      # define the type of response for Success "200" and Error
+      tags:
+        - GetGameList
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetGameListResponse"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      operationId: saveGame
+      description: Add a new game to the list
+      # game info to be stored
+      tags:
+        - AddGame
+      parameters:
+        - name: body
+          description: Game object
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Game"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /games/{id}:
+    # our controller name
+    x-swagger-router-controller: game
+    get:
+      operationId: getGame
+      description: Get a game by id
+      # define the type of response for Success "200" and Error
+      tags:
+        - GetGame
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetGameResponse"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      operationId: updateGame
+      description: Update a game
+      # define the parameters
+      tags:
+        - UpdateGame
+      parameters:
+        - name: id
+          description: Game id of the game to be updates
+          type: string
+          in: path
+          required: true
+        - name: body
+          in: body
+          description: Game properties
+          required: true
+          schema:
+            $ref: "#/definitions/Game"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: deleteGame
+      description: delete a game
+      # define the parameters
+      tags:
+        - DeleteGame
+      parameters:
+        - name: id
+          description: Game id of the game to be deleted
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"  
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  # GET /game successful response
+  GetGameListResponse:
+    required:
+      - games
+    properties:
+      # The array of games
+      games:
+        type: array
+        items: 
+          type: object
+          properties:
+            id:
+              type: string
+            category:
+              type: string
+  GetGameResponse:
+    required:
+      - id
+      - category
+      - guess_words
+    properties:
+      id:
+        type: string
+      category: 
+        type: string
+      wrong_allowed: 
+        type: number
+      guess_words:
+        type: array
+        items:
+          $ref: '#/definitions/Guess'
+  Game:
+    type: object
+    required:
+      - category
+      - guess_words
+    properties:
+      category:
+        type: string
+        description: Game title
+      wrong_allowed:
+        type: number
+        description: Number of wrong guesses allowed 
+      guess_words:
+        type: array
+        items:
+          $ref: '#/definitions/Guess'
+  Guess:
+    type: object
+    required:
+      - word
+    properties:
+      word:
+        type: string
+        description: Guess word
+      hints:
+        type: string
+        description: Guess hints
+  GeneralResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: returns 1 if successful
+      description:
+        type: string
+        description: successful request 
+    required:
+      - success
+      - description
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
