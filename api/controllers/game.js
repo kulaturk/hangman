@@ -25,10 +25,28 @@ function getGameList(req, res, next) {
  * POST /games
  */
 function saveGame(req, res, next) {
-    res.json({
-        success: db.save(req.body),
-        description: "Game added to the list!"
-    });
+
+    req.check('category', 'Game category is required.').notEmpty();
+    req.check('wrong_allowed', 'The number of wrong guesses allowed must be a number.').optional({checkFalsy: true}).isNumeric();
+
+    // TODO: Enable for prod, possible conflict with swagger-tools validator
+    //req.check('guess_words', 'The guess word value is required.').arrayPropNotEmpty('word');
+
+    // Error Message Handling
+    let errors = req.validationErrors();
+
+    if(errors){
+        res.send({
+            status: "failure",
+            error: errors,
+            message: "JSON validation error"
+        });
+    } else {
+        res.json({
+            success: db.save(req.body),
+            description: "Game added to the list!"
+        });
+    }
 }
 
 /*
@@ -36,8 +54,15 @@ function saveGame(req, res, next) {
  */
 function getGame(req, res, next) {
 
-    let id = req.swagger.params.id.value,
-        game = db.find(id);
+    // TODO: Enable for prod, possible conflict with swagger-tools validator
+    /*
+    if (!validateIdFromRequest(req, res)) {
+        return;
+    }
+    */
+
+    let id = req.params.id;
+    let game = db.find(id);
 
     if(game) {
         res.json(game);
@@ -51,8 +76,15 @@ function getGame(req, res, next) {
  */
 function updateGame(req, res, next) {
 
-    let id = req.swagger.params.id.value,
-        game = req.body;
+    // TODO: Enable for prod, possible conflict with swagger-tools validator
+    /*
+     if (!validateIdFromRequest(req, res)) {
+     return;
+     }
+     */
+
+    let id = req.params.id;
+    let game = req.body;
 
     if(db.update(id, game)){
         res.json({
@@ -69,7 +101,14 @@ function updateGame(req, res, next) {
  */
 function deleteGame(req, res, next) {
 
-    let id = req.swagger.params.id.value;
+    // TODO: Enable for prod, possible conflict with swagger-tools validator
+    /*
+     if (!validateIdFromRequest(req, res)) {
+     return;
+     }
+     */
+
+    let id = req.params.id;
 
     if(db.remove(id)){
         res.json({
@@ -78,6 +117,31 @@ function deleteGame(req, res, next) {
         });
     } else {
         res.status(204).send();
+    }
+
+}
+
+/**
+ * Validates ID from the request.
+ * @param req
+ */
+function validateIdFromRequest(req, res) {
+
+    req.check('id', 'Game id is required.').notEmpty();
+
+    // Error Message Handling
+    let errors = req.validationErrors();
+
+    if(errors){
+        res.send({
+            status: "failure",
+            error: errors,
+            message: "JSON validation error"
+        });
+
+        return false;
+    } else {
+        return true;
     }
 
 }
