@@ -21,55 +21,57 @@ produces:
 paths:
   /games:
     # our controller name
-    x-swagger-router-controller: game
+    x-swagger-router-controller: "game"
     get:
-      summary: List of available games
+      summary: "List of available games"
       description: |
         The GetGameList endpoint returns sorted list of available hangman games as an array of objects with the game title and id propperties.
-      operationId: getGameList
+      operationId: "getGameList"
       # define the type of response for Success "200" and Error
       tags:
-        - GetGameList
+        - "Games"
       responses:
         "200":
-          description: Success
+          description: "Game added to the list!"
           schema:
             $ref: "#/definitions/GetGameListResponse"
         default:
-          description: Unexpected error
+          description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"
     post:
-      operationId: saveGame
-      description: Add a new game to the list
+      summary: "Add a new game to the list"
+      description: "The saveGame endpoint adds a new game object to the list. At this time it does not check for duplicates."
+      operationId: "saveGame"
       # game info to be stored
       tags:
-        - AddGame
+        - "Games"
       parameters:
         - name: body
-          description: Game object
+          description: "Game object"
           in: body
           required: true
           schema:
             $ref: "#/definitions/Game"
       responses:
         "200":
-          description: Success
+          description: "Success"
           schema:
             $ref: "#/definitions/GeneralResponse"
         default:
-          description: Unexpected error
+          description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"
   /games/{id}:
     # our controller name
-    x-swagger-router-controller: game
+    x-swagger-router-controller: "game"
     get:
-      operationId: getGame
-      description: Get a game by id
+      summary: "Retrieve a game by id"
+      description: "The getGame endpoint returns a game with id provided as an object with the game category, wrong_allowed and guess_words(array) propperties."
+      operationId: "getGame"
       # define the type of response for Success "200" and Error
       tags:
-        - GetGame
+        - "Games"
       parameters:
         - name: id
           type: string
@@ -77,59 +79,61 @@ paths:
           required: true
       responses:
         "200":
-          description: Success
+          description: "Success"
           schema:
             $ref: "#/definitions/GetGameResponse"
         default:
-          description: Unexpected error
+          description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"
     put:
-      operationId: updateGame
-      description: Update a game
+      summary: "Update a game by id"
+      description: "The updateGame endpoint updates a game object with id provided within the list by replacing existing object with a new one."
+      operationId: "updateGame"
       # define the parameters
       tags:
-        - UpdateGame
+        - "Games"
       parameters:
         - name: id
-          description: Game id of the game to be updates
+          description: "The id of the game to be updated"
           type: string
           in: path
           required: true
         - name: body
           in: body
-          description: Game properties
+          description: "Game object properties"
           required: true
           schema:
             $ref: "#/definitions/Game"
       responses:
         "200":
-          description: Success
+          description: "Success"
           schema:
             $ref: "#/definitions/GeneralResponse"
         default:
-          description: Unexpected error
+          description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"
     delete:
-      operationId: deleteGame
-      description: delete a game
+      summary: "Delete a game by id"
+      description: "The deleteGame endpoint removes a game object with id provided from the list."
+      operationId: "deleteGame"
       # define the parameters
       tags:
-        - DeleteGame
+        - "Games"
       parameters:
         - name: id
-          description: Game id of the game to be deleted
+          description: "The id of the game to be deleted"
           type: string
           in: path
           required: true
       responses:
         "200":
-          description: Success
+          description: "Success"
           schema:
             $ref: "#/definitions/GeneralResponse"
         default:
-          description: Unexpected error
+          description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"  
   /swagger:
@@ -175,10 +179,10 @@ definitions:
     properties:
       category:
         type: string
-        description: Game title
+        description: "Game title"
       wrong_allowed:
         type: number
-        description: Number of wrong guesses allowed 
+        description: "Number of wrong guesses allowed"
       guess_words:
         type: array
         items:
@@ -190,19 +194,19 @@ definitions:
     properties:
       word:
         type: string
-        description: Guess word
+        description: "Single guess word"
       hints:
         type: string
-        description: Guess hints
+        description: "Guess hints"
   GeneralResponse:
     type: object
     properties:
       success:
         type: number
-        description: returns 1 if successful
+        description: "returns 1 if successful"
       description:
         type: string
-        description: successful request 
+        description: "Successful request"
     required:
       - success
       - description
