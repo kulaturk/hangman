@@ -9,7 +9,38 @@ module.exports = function() {
 
     return {
 
-        gameList : [],
+        gameList: [],
+
+        gameListTest: [
+            {
+                "category": "World Capitals",
+                "wrong_allowed": 5,
+                "guess_words": [
+                    {
+                        "word": "Berlin",
+                        "hints": "It is the largest city in Germany."
+                    },
+                    {
+                        "word": "Budapest",
+                        "hints": "Home to the headquarters of the European Institute of Innovation and Technology."
+                    }
+                ]
+            },
+            {
+                "category": "US States",
+                "wrong_allowed": 5,
+                "guess_words": [
+                    {
+                        "word": "California",
+                        "hints": "Death Valley is located in this state."
+                    },
+                    {
+                        "word": "Rhode Island",
+                        "hints": "It is the smallest U.S. state."
+                    }
+                ]
+            }
+        ],
 
         /** 
          * @desc Saves a game to the list array 
